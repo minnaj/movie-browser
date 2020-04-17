@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
@@ -9,12 +10,38 @@ import SearchIcon from '@material-ui/icons/Search';
 const useStyles = makeStyles(() => ({
   container: {
     height: 300,
-
   },
 }));
 
-function SearchHeader() {
+const WAIT_INTERVAL = 1000;
+const ENTER_KEY = 13;
+
+function SearchHeader({ onChange }) {
   const classes = useStyles();
+  const [query, setQuery] = useState('');
+  const queryRef = useRef(query);
+  queryRef.current = query;
+  const timer = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      clearTimeout(timer);
+    };
+  }, []);
+
+  const handleChange = (e) => {
+    clearTimeout(timer.current);
+    setQuery(e.target.value);
+    timer.current = setTimeout(() => {
+      onChange(queryRef.current);
+    }, WAIT_INTERVAL);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.keyCode === ENTER_KEY) {
+      onChange(query);
+    }
+  };
 
   return (
     <Grid
@@ -33,6 +60,9 @@ function SearchHeader() {
           id="search-textfield"
           label="Search for movies and series"
           color="secondary"
+          value={query}
+          onChange={handleChange}
+          onKeyDown={handleKeyDown}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
@@ -45,5 +75,9 @@ function SearchHeader() {
     </Grid>
   );
 }
+
+SearchHeader.propTypes = {
+  onChange: PropTypes.func.isRequired,
+};
 
 export default SearchHeader;

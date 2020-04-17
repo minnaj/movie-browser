@@ -9,6 +9,7 @@ import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import TvIcon from '@material-ui/icons/Tv';
 import TheatersIcon from '@material-ui/icons/Theaters';
+import ImageIcon from '@material-ui/icons/Image';
 import { selectAllMovies } from '../reducers/moviesSlice';
 
 const useStyles = makeStyles(theme => ({
@@ -37,6 +38,12 @@ const useStyles = makeStyles(theme => ({
   poster: {
     objectFit: "cover",
   },
+  iconContainer: {
+    height: "100%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
   content: {
     display: "flex",
     "& > div:first-child": {
@@ -58,13 +65,19 @@ function App() {
         <Grid item key={movie.imdbID} xs={12} md={6}>
           <Card raised>
             <div className={classes.titleContainer}>
-              <img
-                src={movie.Poster}
-                alt="movie poster"
-                width="100%"
-                height="100%"
-                className={classes.poster}
-              />
+              {movie.Poster !== 'N/A' ? (
+                <img
+                  src={movie.Poster}
+                  alt="movie poster"
+                  width="100%"
+                  height="100%"
+                  className={classes.poster}
+                />
+              ) : (
+                <div className={classes.iconContainer}>
+                  <ImageIcon fontSize="large" color="disabled" />
+                </div>
+              )}
               <div className={classes.titleOverlay}>
                 <div>
                   <Typography color="textPrimary" className={classes.title}>

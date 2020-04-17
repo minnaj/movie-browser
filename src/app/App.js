@@ -1,10 +1,12 @@
-import React, { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React from 'react';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Redirect,
+} from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
-import Container from '@material-ui/core/Container';
-import { fetchMovies } from '../reducers/moviesSlice';
-import MovieList from '../components/MovieList';
-import SearchHeader from '../components/SearchHeader';
+import HomeContainer from '../components/HomeContainer';
 
 const useStyles = makeStyles(() => ({
   container: {
@@ -16,41 +18,22 @@ const useStyles = makeStyles(() => ({
 
 function App() {
   const classes = useStyles();
-  const moviesLoading = useSelector(state => state.movies.loading);
-  const moviesError = useSelector(state => state.movies.error);
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(fetchMovies());
-  }, [dispatch]);
-
-  if (moviesLoading) {
-    return (
-      <div className={classes.container}>
-        <Container maxWidth="md">
-          <SearchHeader />
-          <div>Loading...</div>
-        </Container>
-      </div>
-    );
-  }
-  if (moviesError) {
-    return (
-      <div className={classes.container}>
-        <Container maxWidth="md">
-          <SearchHeader />
-          <div>Error encountered</div>
-        </Container>
-      </div>
-    );
-  }
 
   return (
     <div className={classes.container}>
-      <Container maxWidth="md">
-        <SearchHeader />
-        <MovieList />
-      </Container>
+      <Router>
+        <Switch>
+          <Route exact path="/">
+            <HomeContainer />
+          </Route>
+          <Route exact path="/title/:id">
+            <HomeContainer />
+          </Route>
+          <Route path="*">
+            <Redirect to={{ pathname: '/' }} />
+          </Route>
+        </Switch>
+      </Router>
     </div>
   );
 }

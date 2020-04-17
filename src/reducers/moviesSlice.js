@@ -3,9 +3,12 @@ import { searchMovies } from '../app/api';
 
 export const fetchMovies = createAsyncThunk(
   'movies/fetchMoviesStatus',
-  async (_, { rejectWithValue }) => {
+  async (title, { rejectWithValue }) => {
     try {
-      const response = await searchMovies('test');
+      const response = await searchMovies(title);
+      if (response.Response === "False") {
+        return rejectWithValue(response.Error);
+      }
       return response.Search;
     } catch (err) {
       if (!err.response) {
@@ -43,7 +46,7 @@ const moviesSlice = createSlice({
     [fetchMovies.rejected]: (state, action) => {
       state.loading = false;
       if (action.payload) {
-        state.error = action.payload.errorMessage;
+        state.error = action.payload;
       } else {
         state.error = action.error;
       }
