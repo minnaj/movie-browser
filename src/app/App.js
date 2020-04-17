@@ -1,11 +1,23 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchMovies, selectAllMovies } from '../reducers/moviesSlice';
+import { makeStyles } from '@material-ui/core/styles';
+import Container from '@material-ui/core/Container';
+import { fetchMovies } from '../reducers/moviesSlice';
+import MovieList from '../components/MovieList';
+import SearchHeader from '../components/SearchHeader';
+
+const useStyles = makeStyles(() => ({
+  container: {
+    background: 'linear-gradient(#25172D, #100a13) fixed',
+    height: '100%',
+    overflowY: 'auto',
+  },
+}));
 
 function App() {
+  const classes = useStyles();
   const moviesLoading = useSelector(state => state.movies.loading);
   const moviesError = useSelector(state => state.movies.error);
-  const movies = useSelector(selectAllMovies);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -14,20 +26,31 @@ function App() {
 
   if (moviesLoading) {
     return (
-      <div>Loading...</div>
+      <div className={classes.container}>
+        <Container maxWidth="md">
+          <SearchHeader />
+          <div>Loading...</div>
+        </Container>
+      </div>
     );
   }
   if (moviesError) {
     return (
-      <div>Error encountered</div>
+      <div className={classes.container}>
+        <Container maxWidth="md">
+          <SearchHeader />
+          <div>Error encountered</div>
+        </Container>
+      </div>
     );
   }
 
   return (
-    <div>
-      {movies.map(movie => (
-        <div key={movie.imdbID}>{movie.Title}</div>
-      ))}
+    <div className={classes.container}>
+      <Container maxWidth="md">
+        <SearchHeader />
+        <MovieList />
+      </Container>
     </div>
   );
 }
