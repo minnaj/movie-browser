@@ -14,10 +14,7 @@ export const fetchMovies = createAsyncThunk(
         page,
       };
     } catch (err) {
-      if (!err.response) {
-        throw err;
-      }
-      return rejectWithValue(err.response.data);
+      return rejectWithValue('Search failed');
     }
   },
 );
@@ -50,13 +47,9 @@ const moviesSlice = createSlice({
       state.loading = false;
       state.page = payload.page;
     },
-    [fetchMovies.rejected]: (state, action) => {
+    [fetchMovies.rejected]: (state, { payload }) => {
       state.loading = false;
-      if (action.payload) {
-        state.error = action.payload;
-      } else {
-        state.error = action.error;
-      }
+      state.error = payload;
     },
   },
 });

@@ -23,6 +23,6 @@ export async function searchMovies(title, year, type, page) {
       return res.data;
     })
     .catch(function (err) {
-      return err;
+      throw err;
     });
 }
