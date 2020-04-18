@@ -3,13 +3,16 @@ import { searchMovies } from '../app/api';
 
 export const fetchMovies = createAsyncThunk(
   'movies/fetchMoviesStatus',
-  async (title, { rejectWithValue }) => {
+  async ({ title, year, type, page = 1 }, { rejectWithValue }) => {
     try {
-      const response = await searchMovies(title);
+      const response = await searchMovies(title, year, type, page);
       if (response.Response === "False") {
         return rejectWithValue(response.Error);
       }
-      return response.Search;
+      return {
+        ...response,
+        page,
+      };
     } catch (err) {
       if (!err.response) {
         throw err;
@@ -29,6 +32,8 @@ export const moviesAdapter = createEntityAdapter({
 const initialState = moviesAdapter.getInitialState({
   loading: false,
   error: null,
+  totalResults: 0,
+  page: 1,
 });
 
 const moviesSlice = createSlice({
@@ -39,9 +44,11 @@ const moviesSlice = createSlice({
     [fetchMovies.pending]: (state) => {
       state.loading = true;
     },
-    [fetchMovies.fulfilled]: (state, action) => {
-      moviesAdapter.upsertMany(state, action.payload);
+    [fetchMovies.fulfilled]: (state, { payload }) => {
+      moviesAdapter.upsertMany(state, payload.Search);
+      state.totalResults = payload.totalResults;
       state.loading = false;
+      state.page = payload.page;
     },
     [fetchMovies.rejected]: (state, action) => {
       state.loading = false;
