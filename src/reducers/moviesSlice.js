@@ -45,7 +45,7 @@ const moviesSlice = createSlice({
       state.loading = true;
     },
     [fetchMovies.fulfilled]: (state, { payload }) => {
-      moviesAdapter.upsertMany(state, payload.Search);
+      moviesAdapter.setAll(state, payload.Search);
       state.totalResults = payload.totalResults;
       state.loading = false;
       state.page = payload.page;

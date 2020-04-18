@@ -1,13 +1,22 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
-import FirstPageIcon from '@material-ui/icons/FirstPage';
-import LastPageIcon from '@material-ui/icons/LastPage';
 
-const PAGE_BOUNDARY = 3;
+const PAGE_BOUNDARY = 2;
+
+function Ellipsis() {
+  return (
+    <Grid item>
+      …
+    </Grid>
+  );
+}
 
 function Pagination({ page, count, onChange }) {
+  const goToStart = useCallback(() => onChange(0), [onChange]);
+  const goToEnd = useCallback(() => onChange(count - 1), [onChange, count]);
+
   const pagesStartIndex = page > PAGE_BOUNDARY ? page - PAGE_BOUNDARY : 0;
   const pagesEndIndex = count - 1 - page > PAGE_BOUNDARY ? page + PAGE_BOUNDARY : count - 1;
 
@@ -16,50 +25,48 @@ function Pagination({ page, count, onChange }) {
 
   return (
     <Grid container spacing={1} justify="center" alignItems="flex-end">
-      <Grid item>
-        <Button
-          size="small"
-          variant="outlined"
-          color="secondary"
-          onClick={page === 0 ? () => {} : () => onChange(0)}
-          disabled={page === 0}
-        >
-          <FirstPageIcon size="small" />
-        </Button>
-      </Grid>
       {pagesStartIndex > 0 && (
         <Grid item>
-          …
+          <Button
+            size="small"
+            variant={"outlined"}
+            color="secondary"
+            onClick={goToStart}
+          >
+            1
+          </Button>
         </Grid>
       )}
+      {pagesStartIndex > 1 && <Ellipsis />}
       {displayedPages.map(displayedPage => (
         <Grid item key={displayedPage}>
           <Button
             size="small"
             variant={page === displayedPage ? "contained" : "outlined"}
             color="secondary"
-            onClick={page === displayedPage ? () => {} : () => onChange(displayedPage)}
+            onClick={() => {
+              if (page !== displayedPage) {
+                onChange(displayedPage);
+              }
+            }}
           >
             {displayedPage + 1}
           </Button>
         </Grid>
       ))}
+      {pagesEndIndex + 2 < count && <Ellipsis />}
       {pagesEndIndex + 1 < count && (
         <Grid item>
-          …
+          <Button
+            size="small"
+            variant={"outlined"}
+            color="secondary"
+            onClick={goToEnd}
+          >
+            {count}
+          </Button>
         </Grid>
       )}
-      <Grid item>
-        <Button
-          size="small"
-          variant="outlined"
-          color="secondary"
-          onClick={page === count - 1 ? () => {} : () => onChange(count - 1)}
-          disabled={page === count - 1}
-        >
-          <LastPageIcon size="small" />
-        </Button>
-      </Grid>
     </Grid>
   );
 }

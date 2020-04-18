@@ -3,14 +3,21 @@ import { useSelector, useDispatch } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
 import { fetchMovies } from '../reducers/moviesSlice';
 import MovieList from '../components/MovieList';
 import SearchHeader from '../components/SearchHeader';
 import CircularProgress from '../components/CircularProgress';
 import Pagination from './Pagination';
 
+const useStyles = makeStyles(() => ({
+  container: {
+    marginBottom: 30,
+  },
+}));
+
 function HomeContainer() {
+  const classes = useStyles();
   const moviesLoading = useSelector(state => state.movies.loading);
   const moviesError = useSelector(state => state.movies.error);
   const moviesCount = useSelector(state => state.movies.totalResults);
@@ -22,27 +29,46 @@ function HomeContainer() {
 
   useEffect(() => {
     if (query.length > 2) {
-      dispatch(fetchMovies({ title: query }));
+      dispatch(fetchMovies({ title: query, page: page + 1 }));
     }
-  }, [dispatch, query]);
+  }, [dispatch, query, page]);
 
   return (
-    <Container maxWidth="md">
-      <SearchHeader value={query} onChange={value => setQuery(value)} />
+    <Container maxWidth="md" className={classes.container}>
+      <Grid container direction="column" spacing={2}>
+        <Grid item>
+          <SearchHeader value={query} onChange={value => setQuery(value)} />
+        </Grid>
 
-      {moviesLoading && <CircularProgress />}
+        {moviesLoading && (
+          <Grid item>
+            <CircularProgress />
+          </Grid>
+        )}
 
-      {!moviesLoading && moviesError && (
-        <Typography color="error" align="center">{moviesError}</Typography>
-      )}
-
-      {!moviesLoading && !moviesError && query !== '' && (
-        <>
-          <Pagination page={page} count={totalPages} onChange={setPage} />
-          <Typography align="center" gutterBottom>{`Found ${moviesCount} results`}</Typography>
-          <MovieList />
-        </>
-      )}
+        {!moviesLoading && moviesError && (
+          <Grid item>
+            <Typography color="error" align="center">{moviesError}</Typography>
+          </Grid>
+        )}
+  
+        {!moviesLoading && !moviesError && query !== '' && (
+          <>
+            <Grid item>
+              <Typography align="center" gutterBottom>{`Found ${moviesCount} results`}</Typography>
+            </Grid>
+            <Grid item>
+              <Pagination page={page} count={totalPages} onChange={setPage} />
+            </Grid>
+            <Grid item>
+              <MovieList />
+            </Grid>
+            <Grid item>
+              <Pagination page={page} count={totalPages} onChange={setPage} />
+            </Grid>
+          </>
+        )}
+      </Grid>
     </Container>
   );
 }
