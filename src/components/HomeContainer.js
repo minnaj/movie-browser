@@ -7,7 +7,6 @@ import Grid from '@material-ui/core/Grid';
 import { fetchMovies } from '../reducers/moviesSlice';
 import MovieList from '../components/MovieList';
 import SearchHeader from '../components/SearchHeader';
-import Pagination from './Pagination';
 
 const useStyles = makeStyles(() => ({
   container: {
@@ -57,24 +56,15 @@ function HomeContainer() {
           </Grid>
         )}
 
-        {!moviesLoading && !moviesError && query !== '' && (
-          <Grid item className={classes.infoContainer}>
-            <Typography align="center" gutterBottom>{`Found ${moviesCount} results`}</Typography>
-          </Grid>
-        )}
-
         {!moviesError && query !== '' && (
-          <>
-            <Grid item>
-              <Pagination page={page} count={totalPages} onChange={setPage} />
-            </Grid>
-            <Grid item>
-              <MovieList loading={moviesLoading} />
-            </Grid>
-            <Grid item>
-              <Pagination page={page} count={totalPages} onChange={setPage} />
-            </Grid>
-          </>
+          <Grid item>
+            <MovieList
+              loading={moviesLoading}
+              page={page}
+              pageCount={totalPages}
+              onPageChange={setPage}
+            />
+          </Grid>
         )}
       </Grid>
     </Container>

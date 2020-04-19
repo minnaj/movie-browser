@@ -12,6 +12,9 @@ import DvrIcon from '@material-ui/icons/Dvr';
 import TheatersIcon from '@material-ui/icons/Theaters';
 import ImageIcon from '@material-ui/icons/Image';
 
+const CARD_CONTENT_HEIGHT = 62;
+const CARD_ACTIONS_HEIGHT = 52.5;
+
 const useStyles = makeStyles(theme => ({
   title: {
     color: theme.palette.primary.main,
@@ -53,6 +56,12 @@ const useStyles = makeStyles(theme => ({
   typeIcon: {
     color: theme.palette.secondary.main,
   },
+  skeletonRoot: {
+    backgroundColor: '#3e3c42',
+  },
+  cardContentRoot: {
+    height: CARD_CONTENT_HEIGHT + CARD_ACTIONS_HEIGHT,
+  },
 }));
 
 function MovieCard({
@@ -60,21 +69,41 @@ function MovieCard({
   year,
   posterUrl,
   type,
+  showSkeleton,
 }) {
   const classes = useStyles();
 
+  if (showSkeleton) {
+    return (
+      <Fade in>
+        <Card raised classes={{ root: classes.skeletonRoot }}>
+          <div className={classes.titleContainer}>
+            <div className={classes.iconContainer}>
+              <ImageIcon fontSize="large" color="disabled" />
+            </div>
+            <div className={classes.titleOverlay}>
+              <div />
+            </div>
+          </div>
+          <CardContent classes={{ root: classes.cardContentRoot }} />
+        </Card>
+      </Fade>
+    );
+  }
   return (
     <Fade in>
       <Card raised>
         <div className={classes.titleContainer}>
           {!posterUrl || posterUrl !== 'N/A' ? (
-            <img
-              src={posterUrl}
-              alt="movie poster"
-              width="100%"
-              height="100%"
-              className={classes.poster}
-            />
+            <Fade in>
+              <img
+                src={posterUrl}
+                alt="movie poster"
+                width="100%"
+                height="100%"
+                className={classes.poster}
+              />
+            </Fade>
           ) : (
             <div className={classes.iconContainer}>
               <ImageIcon fontSize="large" color="disabled" />
@@ -121,6 +150,14 @@ MovieCard.propTypes = {
   year: PropTypes.string,
   posterUrl: PropTypes.string,
   type: PropTypes.string,
+  showSkeleton: PropTypes.bool,
+};
+
+MovieCard.defaultProps = {
+  year: '',
+  posterUrl: '',
+  type: '',
+  showSkeleton: false,
 };
 
 export default MovieCard;
