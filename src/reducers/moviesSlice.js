@@ -32,12 +32,30 @@ const initialState = moviesAdapter.getInitialState({
   error: null,
   totalResults: 0,
   page: 1,
+  favorites: [],
 });
 
 const moviesSlice = createSlice({
   name: 'movies',
   initialState,
-  reducers: {},
+  reducers: {
+    toggleFavorite: (state, { payload }) => {
+      const favorites = state.favorites.slice(0);
+      const index = state.favorites.findIndex(item => item === payload);
+      if (index === -1) {
+        state.favorites = favorites.concat(payload);
+      } else if (index === 0) {
+        state.favorites = favorites.slice(1);
+      } else if (index === state.favorites.length - 1) {
+        state.favorites = favorites.slice(0, -1);
+      } else if (index > 0) {
+        state.favorites = [
+          ...favorites.slice(0, index),
+          ...favorites.slice(index + 1),
+        ];
+      }
+    },
+  },
   extraReducers: {
     [fetchMovies.pending]: (state, { meta }) => {
       state.query = meta.arg.title;
@@ -56,6 +74,8 @@ const moviesSlice = createSlice({
     },
   },
 });
+
+export const { toggleFavorite } = moviesSlice.actions;
 
 export default moviesSlice.reducer;
 

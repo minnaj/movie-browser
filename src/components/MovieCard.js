@@ -7,10 +7,12 @@ import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import Fade from '@material-ui/core/Fade';
+import IconButton from '@material-ui/core/IconButton';
 import TvIcon from '@material-ui/icons/Tv';
 import DvrIcon from '@material-ui/icons/Dvr';
 import TheatersIcon from '@material-ui/icons/Theaters';
 import ImageIcon from '@material-ui/icons/Image';
+import FavoriteIcon from '@material-ui/icons/Favorite';
 
 const CARD_CONTENT_HEIGHT = 62;
 const CARD_ACTIONS_HEIGHT = 52.5;
@@ -62,6 +64,9 @@ const useStyles = makeStyles(theme => ({
   cardContentRoot: {
     height: CARD_CONTENT_HEIGHT + CARD_ACTIONS_HEIGHT,
   },
+  cardActionsRoot: {
+    justifyContent: 'space-between',
+  },
 }));
 
 function MovieCard({
@@ -70,6 +75,8 @@ function MovieCard({
   posterUrl,
   type,
   showSkeleton,
+  isFavorite,
+  onToggleFavorite,
 }) {
   const classes = useStyles();
 
@@ -137,7 +144,10 @@ function MovieCard({
             </div>
           </div>
         </CardContent>
-        <CardActions>
+        <CardActions classes={{ root: classes.cardActionsRoot }}>
+          <IconButton aria-label="add to favorites" color={isFavorite ? 'primary' : 'default'} onClick={onToggleFavorite}>
+            <FavoriteIcon />
+          </IconButton>
           <Button variant="contained" color="primary">Read more</Button>
         </CardActions>
       </Card>
@@ -151,6 +161,8 @@ MovieCard.propTypes = {
   posterUrl: PropTypes.string,
   type: PropTypes.string,
   showSkeleton: PropTypes.bool,
+  isFavorite: PropTypes.bool,
+  onToggleFavorite: PropTypes.func,
 };
 
 MovieCard.defaultProps = {
@@ -158,6 +170,8 @@ MovieCard.defaultProps = {
   posterUrl: '',
   type: '',
   showSkeleton: false,
+  isFavorite: false,
+  onToggleFavorite: null,
 };
 
 export default MovieCard;

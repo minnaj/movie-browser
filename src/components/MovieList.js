@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
-import { selectAllMovies } from '../reducers/moviesSlice';
+import { selectAllMovies, toggleFavorite } from '../reducers/moviesSlice';
 import MovieCard from './MovieCard';
 import Pagination from './Pagination';
 
@@ -21,7 +21,9 @@ const useStyles = makeStyles(() => ({
 
 function MovieList({ loading, page, pageCount, onPageChange }) {
   const classes = useStyles();
+  const dispatch = useDispatch();
   const movies = useSelector(selectAllMovies);
+  const favorites = useSelector(state => state.movies.favorites);
 
   // Display either skeletons or actual content as the first cards
   const topCards = [];
@@ -36,6 +38,8 @@ function MovieList({ loading, page, pageCount, onPageChange }) {
             year={loading ? '' : movies[i].Year}
             posterUrl={loading ? '' : movies[i].Poster}
             type={loading ? '' : movies[i].Type}
+            isFavorite={loading ? null : favorites.includes(movies[i].imdbID)}
+            onToggleFavorite={loading ? null : () => dispatch(toggleFavorite(movies[i].imdbID))}
           />
         </Grid>,
       );
@@ -55,6 +59,8 @@ function MovieList({ loading, page, pageCount, onPageChange }) {
             year={movie.Year}
             posterUrl={movie.Poster}
             type={movie.Type}
+            isFavorite={favorites.includes(movie.imdbID)}
+            onToggleFavorite={() => dispatch(toggleFavorite(movie.imdbID))}
           />
         </Grid>
       ))}
