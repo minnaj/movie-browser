@@ -6,19 +6,25 @@ import Typography from '@material-ui/core/Typography';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import TextField from '@material-ui/core/TextField';
 import SearchIcon from '@material-ui/icons/Search';
+import CircularProgress from '../components/CircularProgress';
+
+const WAIT_INTERVAL = 1000;
+const ENTER_KEY = 13;
+const LOADING_SPINNER_SIZE = 30;
 
 const useStyles = makeStyles(() => ({
   container: {
     height: 300,
   },
+  loadingContainer: {
+    width: LOADING_SPINNER_SIZE + 8,
+    height: LOADING_SPINNER_SIZE + 8,
+  },
 }));
 
-const WAIT_INTERVAL = 1000;
-const ENTER_KEY = 13;
-
-function SearchHeader({ onChange }) {
+function SearchHeader({ value, onChange, loading }) {
   const classes = useStyles();
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState(value);
   const queryRef = useRef(query);
   queryRef.current = query;
   const timer = useRef(null);
@@ -55,29 +61,42 @@ function SearchHeader({ onChange }) {
       <Grid item>
         <Typography variant="h3" color="primary">The Open Movie Database search</Typography>
       </Grid>
-      <Grid item>
-        <TextField
-          id="search-textfield"
-          label="Search for movies and series"
-          color="secondary"
-          value={query}
-          onChange={handleChange}
-          onKeyDown={handleKeyDown}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon />
-              </InputAdornment>
-            ),
-          }}
-        />
+      <Grid item container alignItems="flex-end" justify="center" spacing={1}>
+        <Grid item className={classes.loadingContainer} />
+        <Grid item>
+          <TextField
+            id="search-textfield"
+            label="Search for movies and series"
+            color="secondary"
+            value={query}
+            onChange={handleChange}
+            onKeyDown={handleKeyDown}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            }}
+          />
+        </Grid>
+        <Grid item className={classes.loadingContainer}>
+          {loading && <CircularProgress size={LOADING_SPINNER_SIZE} />}
+        </Grid>
       </Grid>
     </Grid>
   );
 }
 
 SearchHeader.propTypes = {
+  value: PropTypes.string,
   onChange: PropTypes.func.isRequired,
+  loading: PropTypes.bool,
+};
+
+SearchHeader.defaultProps = {
+  value: '',
+  loading: false,
 };
 
 export default SearchHeader;

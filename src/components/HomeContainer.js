@@ -7,12 +7,14 @@ import Grid from '@material-ui/core/Grid';
 import { fetchMovies } from '../reducers/moviesSlice';
 import MovieList from '../components/MovieList';
 import SearchHeader from '../components/SearchHeader';
-import CircularProgress from '../components/CircularProgress';
 import Pagination from './Pagination';
 
 const useStyles = makeStyles(() => ({
   container: {
     marginBottom: 30,
+  },
+  infoContainer: {
+    height: 50,
   },
 }));
 
@@ -33,35 +35,41 @@ function HomeContainer() {
     }
   }, [dispatch, query, page]);
 
+  const handleQueryChange = newQuery => {
+    setQuery(newQuery);
+    setPage(0);
+  };
+
   return (
     <Container maxWidth="md" className={classes.container}>
       <Grid container direction="column" spacing={2}>
         <Grid item>
-          <SearchHeader value={query} onChange={value => setQuery(value)} />
+          <SearchHeader
+            value={query}
+            onChange={handleQueryChange}
+            loading={moviesLoading}
+          />
         </Grid>
 
-        {moviesLoading && (
-          <Grid item>
-            <CircularProgress />
-          </Grid>
-        )}
-
         {!moviesLoading && moviesError && (
-          <Grid item>
+          <Grid item className={classes.infoContainer}>
             <Typography color="error" align="center">{moviesError}</Typography>
           </Grid>
         )}
-  
+
         {!moviesLoading && !moviesError && query !== '' && (
+          <Grid item className={classes.infoContainer}>
+            <Typography align="center" gutterBottom>{`Found ${moviesCount} results`}</Typography>
+          </Grid>
+        )}
+
+        {!moviesError && query !== '' && (
           <>
-            <Grid item>
-              <Typography align="center" gutterBottom>{`Found ${moviesCount} results`}</Typography>
-            </Grid>
             <Grid item>
               <Pagination page={page} count={totalPages} onChange={setPage} />
             </Grid>
             <Grid item>
-              <MovieList />
+              <MovieList loading={moviesLoading} />
             </Grid>
             <Grid item>
               <Pagination page={page} count={totalPages} onChange={setPage} />

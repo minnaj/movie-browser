@@ -27,6 +27,7 @@ export const moviesAdapter = createEntityAdapter({
 // If you want to track 'loading' or other keys, you would initialize them here:
 // `getInitialState({ loading: false, activeRequestId: null })`
 const initialState = moviesAdapter.getInitialState({
+  query: '',
   loading: false,
   error: null,
   totalResults: 0,
@@ -38,7 +39,9 @@ const moviesSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: {
-    [fetchMovies.pending]: (state) => {
+    [fetchMovies.pending]: (state, { meta }) => {
+      state.query = meta.arg.title;
+      state.page = meta.arg.page;
       state.loading = true;
     },
     [fetchMovies.fulfilled]: (state, { payload }) => {

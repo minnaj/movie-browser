@@ -1,9 +1,17 @@
 import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
+import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 
 const PAGE_BOUNDARY = 2;
+
+const useStyles = makeStyles(() => ({
+  container: {
+    minHeight: 40,
+  },
+}));
+
 
 function Ellipsis() {
   return (
@@ -14,8 +22,19 @@ function Ellipsis() {
 }
 
 function Pagination({ page, count, onChange }) {
+  const classes = useStyles();
   const goToStart = useCallback(() => onChange(0), [onChange]);
   const goToEnd = useCallback(() => onChange(count - 1), [onChange, count]);
+
+  if (count === 0) {
+    return (
+      <Grid
+        container
+        spacing={1}
+        className={classes.container}
+      />
+    );
+  }
 
   const pagesStartIndex = page > PAGE_BOUNDARY ? page - PAGE_BOUNDARY : 0;
   const pagesEndIndex = count - 1 - page > PAGE_BOUNDARY ? page + PAGE_BOUNDARY : count - 1;
@@ -24,7 +43,13 @@ function Pagination({ page, count, onChange }) {
   const displayedPages = Array.from({ length: pagesRange }, (_, i) => pagesStartIndex + i);
 
   return (
-    <Grid container spacing={1} justify="center" alignItems="flex-end">
+    <Grid
+      container
+      spacing={1}
+      justify="center"
+      alignItems="flex-end"
+      className={classes.container}
+    >
       {pagesStartIndex > 0 && (
         <Grid item>
           <Button
